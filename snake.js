@@ -27,7 +27,7 @@ function main(){
 }
 
 
-function drawSnakePart(snakePart, toggle){
+function drawSnakePart(snakePart, toggle){ // draws a block on the canvas in the argument form ([x,y], draw snake/erase/draw food)
 	if(toggle == "draw"){
 		ctx.fillStyle = 'lightgreen';
 		ctx.strokeStyle = "rgb(18, 18, 18)";
