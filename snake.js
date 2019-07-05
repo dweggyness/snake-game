@@ -6,7 +6,7 @@ var scoreMessage = document.querySelector("p");
 var ctx = canvas.getContext("2d");
 var snake = [[225,225],[210,225],[195,225]];
 var curDirection = "EAST";
-var changeDirection;
+var keyBuffer = [];
 var foodLocation;
 var gameEnd = false;
 var score = 0;
@@ -17,8 +17,8 @@ var gameSpeed = 100;
 function main(){
 	if(gameEnd == false){
 		setTimeout(function onTick(){
+			updateDirection(); // process next player move
 			advanceSnake();
-			changeDirection = 0; // alows player to change direction 
 			drawSnake();
 			// console.log("X" + snake[0][0] + "," + "Y" + snake[0][1] + " " + changeDirection)
 			main();
@@ -140,6 +140,23 @@ function borderTest(newHeadCoordinate){
 	}
 }
 
+function updateDirection(){
+	var key = keyBuffer.shift();
+
+	if(key === 38 && curDirection != "SOUTH"){ // UP arrow key
+		curDirection = "NORTH";
+	}
+	else if(key === 40 && curDirection != "NORTH"){ // DOWN arrow key
+		curDirection = "SOUTH";
+	}
+	else if(key === 39 && curDirection != "WEST"){ // UP arrow key
+		curDirection = "EAST";
+	}
+	else if(key === 37 && curDirection != "EAST"){ // UP arrow key
+		curDirection = "WEST";
+	}
+}
+
 function gameOver(){
 	gameOverButton.style.display = "block";
 	scoreMessage.textContent = "Your score is " + score
@@ -161,29 +178,11 @@ function resetGame(){
 gameOverButton.addEventListener("click", resetGame);
 
 window.addEventListener("keydown", function(event){
-
-	if(changeDirection == true) { // if direction has already been changed in between steps
-		return;
-	}
-
-	if(event.keyCode === 38 && curDirection != "SOUTH"){ // UP arrow key
-		curDirection = "NORTH";
-	}
-	else if(event.keyCode === 40 && curDirection != "NORTH"){ // DOWN arrow key
-		curDirection = "SOUTH";
-	}
-	else if(event.keyCode === 39 && curDirection != "WEST"){ // UP arrow key
-		curDirection = "EAST";
-	}
-	else if(event.keyCode === 37 && curDirection != "EAST"){ // UP arrow key
-		curDirection = "WEST";
-	}
-	else {
-		return;
-	}
-
-	changeDirection = true; // direction has been changed
-
+	if (event.keyCode >= 37 && event.keyCode <= 40 && 
+            event.keyCode !== keyBuffer[keyBuffer.length-1]) { // don't allow players to queue 2 of the same moves
+        keyBuffer = keyBuffer.slice(-2);
+    	keyBuffer.push(event.keyCode);
+   	}
 })
 
 newFood();
